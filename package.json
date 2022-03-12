@@ -1,8 +1,9 @@
 {
     "name": "@alpler/logger",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "description": "A simple way to create log files",
     "main": "index.js",
+    "types": "./src/@types/index.d.ts",
     "dependencies": {
         "fs": "^0.0.1-security",
         "path": "^0.12.7",

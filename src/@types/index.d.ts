@@ -1,18 +1,12 @@
-declare module 'alplogger' {
 
-    import fs from "fs"
+export function createFiles(): void
+export function deleteFiles(): void
 
-    export class AlpLogger {
+export function log(location: string, text: string, type?: string): void
 
-        log(location: string, text: string, type?: string): void
-        logInfo(location: string, text: string): void
-        logError(location: string, text: string): void
-        logAll(location: string, text: string, type?: string): void
-        logCustom(type: string, location: string, text: string): void
+export function logInfo(location: string, text: string): void
+export function logError(location: string, text: string): void
 
-        deleteFiles(): void
-    }
+export function logAll(location: string, text: string, type?: string): void
 
-    export function Logger(): AlpLogger
-
-}
+export function logCustom(type: string, location: string, text: string): void
