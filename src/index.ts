@@ -1,82 +1,120 @@
+// Type definitions for @alpler/logger
+// Project: https://github.com/Aelpler/-alpler-logger
+// Author: https://github.com/Aelpler
+
 import fs from "fs"
 import path from "path"
+import { LogLevel } from "./logLevel"
 
-let _logFolder = "logs"
-let _log_Error_File = "errors.log"
-let _log_Info_File = "infos.log"
-let _log_All_File = "all.log"
+namespace logger {
 
-function createFiles() {
-    if (!fs.existsSync(path.join("./", _logFolder)))
-        fs.mkdirSync(path.join("./", _logFolder))
+    /**
+     * Level at which a message will be logged
+     * default: LogLevel.INFO
+     */
+    let _logLevel: LogLevel = LogLevel.INFO
 
-    if (!fs.existsSync(path.join("./", _logFolder, _log_All_File)))
-        fs.writeFileSync(path.join("./", _logFolder, _log_All_File), "")
-    if (!fs.existsSync(path.join("./", _logFolder, _log_Error_File)))
-        fs.writeFileSync(path.join("./", _logFolder, _log_Error_File), "")
-    if (!fs.existsSync(path.join("./", _logFolder, _log_Info_File)))
-        fs.writeFileSync(path.join("./", _logFolder, _log_Info_File), "")
+    /**
+     * Folder in which logs will be saved
+     */
+    let _logFolder = "logs"
+    /**
+     * File where all messages will end up
+     */
+    let _log_File = "log.log"
+    /**
+     * File where messages with level greater than LogLevel.WARN will end up
+     */
+    let _log_Error_File = "errors.log"
+
+    /**
+     * Set log level at which it will log messages
+     * @param {LogLevel} logLevel How important a message needs to be, to be loged
+     * @public
+     */
+    export function setLogLevel(logLevel: LogLevel): void {
+        _logLevel = logLevel
+    }
+
+    /**
+     * Create local files in which you log messages will end up.
+     * Folder in which log.log and erros.log will be
+     * @public
+     */
+    export function createFiles(): void {
+        if (!fs.existsSync(path.join("./", _logFolder)))
+            fs.mkdirSync(path.join("./", _logFolder))
+
+        if (!fs.existsSync(path.join("./", _logFolder, _log_File)))
+            fs.writeFileSync(path.join("./", _logFolder, _log_File), "")
+        if (!fs.existsSync(path.join("./", _logFolder, _log_Error_File)))
+            fs.writeFileSync(path.join("./", _logFolder, _log_Error_File), "")
+    }
+
+    /**
+     * Delete local files with log messages
+     * In order to continue without messages don't forget to use createFiles() after
+     * @public 
+     */
+    export function deleteFiles(): void {
+        if (fs.existsSync(path.join("./", _logFolder)))
+            fs.rmSync(path.join("./", _logFolder), { recursive: true, force: true })
+    }
+
+    /**
+     * Log messages into file and also into console
+     * @param {LogLevel} logLevel Imporatance of you message
+     * @param {string} location Where in the program a message came from 
+     * @param {string} text The message you want to log
+     * @public
+     */
+    export function log(logLevel: LogLevel, location: string, text: string): void {
+        let formatedLog: string = formatText(logLevel, location, text)
+
+        // If logLevel is greater than error write also to error.log
+        if (logLevel >= LogLevel.WARN) {
+            fs.appendFile(path.join("./", _logFolder, _log_Error_File), formatedLog, function (err: any) {
+                if (err)
+                    console.log(`Couldn't write to error log ${err}`)
+            })
+        }
+
+        // Logs if logLevel from message is greater or simular to set _logLevel
+        if (_logLevel <= logLevel) {
+            fs.appendFile(path.join("./", _logFolder, _log_File), formatedLog, function (err: any) {
+                if (err)
+                    console.log(`Couldn't write to log file ${err}`)
+            })
+        }
+
+        if (logLevel >= 3000 || _logLevel <= logLevel) {
+            console.log(formatedLog)
+        }
+    }
+
+    /**
+     * Formats the given parameters into single text so all have the same format
+     * @param {LogLevel} logLevel Imporatance of you message
+     * @param {string} location Where in the program a message came from 
+     * @param {string} text The message you want to log
+     * @return {string} Formated log message with date,time,level,location,text
+     */
+    function formatText(logLevel: LogLevel, location: string, text: string): string {
+        let date = new Date()
+        let dateString = `[${formatNumber(date.getDate())}.${formatNumber(date.getMonth())}.${date.getFullYear()}]`
+        let timeString = `[${formatNumber(date.getHours())}:${formatNumber(date.getMinutes())}]`
+        return `${dateString} ${timeString} ${logLevel.toLocaleString()} ${location} ${text}\n`
+    }
+
+    /**
+     * Converts a number to string, adds n is below value of 10
+     * @param {number} n Number which will be converted to string
+     * @return {string} Formated number, with may added 0 
+     */
+    function formatNumber(n: number): string {
+        return (n < 10 ? '0' : '') + n;
+    }
+
 }
 
-function deleteFiles() {
-    if (fs.existsSync(path.join("./", _logFolder)))
-        fs.rmdirSync(path.join("./", _logFolder))
-}
-
-function log(location: string, text: string, type?: string): void {
-    if (!type)
-        type = "NORMAL"
-    fs.writeFileSync(path.join("./", _logFolder, _log_All_File), addPreText(location, type, text), { flag: 'a+' })
-
-    console.log(addPreText(location, type, text))
-}
-
-function logInfo(location: string, text: string) {
-    let type = "INFO"
-    log(location, text, type)
-    fs.writeFileSync(path.join("./", _logFolder, _log_Info_File), addPreText(location, type, text), { flag: 'a+' })
-
-    console.log(addPreText(location, type, text))
-}
-
-function logError(location: string, text: string) {
-    let type = "ERROR"
-    log(location, text, type)
-    fs.writeFileSync(path.join("./", _logFolder, _log_Error_File), addPreText(location, type, text), { flag: 'a+' })
-
-    console.error(addPreText(location, type, text))
-}
-
-function logAll(location: string, text: string, type?: string) {
-    if (!type)
-        type = "ALL"
-
-    fs.writeFileSync(path.join("./", _logFolder, _log_Info_File), addPreText(location, type, text), { flag: 'a+' })
-    fs.writeFileSync(path.join("./", _logFolder, _log_Error_File), addPreText(location, type, text), { flag: 'a+' })
-    fs.writeFileSync(path.join("./", _logFolder, _log_All_File), addPreText(location, type, text), { flag: 'a+' })
-}
-
-function logCustom(type: string, location: string, text: string) {
-    if (!fs.existsSync(path.join("./", _logFolder)))
-        fs.mkdirSync(path.join("./", _logFolder))
-
-    if (!fs.existsSync(path.join("./", _logFolder, type + ".log")))
-        fs.writeFileSync(path.join("./", _logFolder, type + ".log"), addPreText(location, type, text))
-}
-
-function addPreText(location: string, type: string, text: string) {
-    let date = new Date()
-    let dateString = `[${formatNumber(date.getDate())}.${formatNumber(date.getMonth())}.${date.getFullYear()}]`
-    let timeString = `[${formatNumber(date.getHours())}:${formatNumber(date.getMinutes())}]`
-    return `${dateString} ${timeString} ${location} ${text}\n`
-}
-
-function formatNumber(n: number): string {
-    return (n < 10 ? '0' : '') + n;
-}
-
-
-createFiles()
-
-export default { log, logAll, logError, logInfo, logCustom, deleteFiles, createFiles }
-
+export { logger, LogLevel }
