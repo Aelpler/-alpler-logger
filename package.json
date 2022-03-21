@@ -1,6 +1,6 @@
 {
     "name": "@alpler/logger",
-    "version": "1.2.1",
+    "version": "1.2.4",
     "description": "A simple way to create log files",
     "main": "index.js",
     "types": "./src/@types/index.d.ts",

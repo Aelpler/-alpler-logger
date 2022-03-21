@@ -1,4 +1,4 @@
-import { logger, LogLevel } from "@alpler/logger"
+import * as logger from "@alpler/logger"
 
-logger.setLogLevel(LogLevel.INFO)
-logger.log(LogLevel.ERROR, "example.ts:3", "There is no code left to execute :(")
+logger.setLogLevel(logger.LogLevel.INFO)
+logger.log(logger.LogLevel.ERROR, "example.ts:3", "There is no code left to execute :(") 

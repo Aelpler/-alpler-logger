@@ -1,4 +1,4 @@
-# AlpLogger
+# @alpler/logger
 
 ## Table of Contents
 - [Install](#install)
@@ -21,22 +21,23 @@ Simple example of how use it
 
 JavaScript:
 
-    let logger = require("@alpler/logger")
-    
-    logger.logger.setLogLevel(logger.LogLevel.INFO)
-    logger.logger.log(logger.LogLevel.ERROR, "example.js:5", "There is no code left to execute :(")
+    const logger = require("@alpler/logger");
+    logger.setLogLevel(logger.LogLevel.INFO);
+    logger.log(logger.LogLevel.ERROR, "example.js:5", "There is no code left to execute :(");
+
 
 TypeScript: 
 
-    import { logger, LogLevel } from  "@alpler/logger"
+    import * as logger from "@alpler/logger"
     
-    logger.setLogLevel(LogLevel.INFO)
-    logger.log(LogLevel.ERROR, "example.ts:3", "There is no code left to execute :(")
+    logger.setLogLevel(logger.LogLevel.INFO)
+    logger.log(logger.LogLevel.ERROR, "example.ts:3", "There is no code left to execute :( ") 
+
 	
 	
 OUTPUT:
 
-    [20.02.2022] [17:00] 4.000 example.js:5 There is no code left to execute :(
+    [21.02.2022] [01:08] ERROR example.ts:3 There is no code left to execute :(
 
 
 ## Log Levels
@@ -59,29 +60,28 @@ Name | Value | Description
 
 
 ### Usages:
-These are:
 
-#### Setting the Log Level
+#### **Setting the Log Level**
 
 Typescript:
 
-    logger.setLogLevel(LogLevel.INFO)
+    logger.setLogLevel(logger.LogLevel.INFO)
 
 JavaScript:
 
-    logger.logger.setLogLevel(logger.LogLevel.INFO)
+    logger.setLogLevel(logger.LogLevel.INFO)
    
    This will set the Level at which the logger will start writing it into the log.log and also the console
 
-#### Logging a message
+#### **Logging a message**
 
 Typescript:
 
-    logger.log(LogLevel.ERROR, "example.ts:3", "There is no code left to execute :(")
+    logger.log(logger.LogLevel.ERROR, "example.ts:3", "There is no code left to execute :(")
 
 JavaScript:
 
-    logger.logger.log(logger.LogLevel.ERROR, "example.js:5", "There is no code left to execute :(")
+    logger.log(logger.LogLevel.ERROR, "example.js:5", "There is no code left to execute :(")
 
-In this Case we pass a Log Level with a message so the logger can check if the message should be logged
+In this Case we pass a Log Level with a message so the logger can check if the message should be logged.
 
