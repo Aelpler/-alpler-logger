@@ -45,7 +45,7 @@ Each Log Level describes the different importance of a message.
 
 ### Types:
 
-In the version 1.2.1 there are six different Log levels these are
+In the version 1.2.4 there are six different Log levels these are
 
 
 Name | Value | Description
